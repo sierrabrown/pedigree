@@ -14,10 +14,9 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-print BASE_DIR
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
+
+PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'nn7+d2v0-q21a%axndk715r&(1qzx^#3s-y4sg5%sj_r84t9!1'
@@ -37,8 +36,10 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.shortcuts',
+    'pedigree',
     # Lets you call your webpack bundle from a django template.
-    'django-webpack-loader'
+    'webpack_loader'
 )
 
 MIDDLEWARE_CLASSES = (
