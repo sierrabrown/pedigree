@@ -1,2 +1,5 @@
-pedigree/node_modules/*
-venv/*
+react-pedigree/node_modules/*
+django-pedigree/pip-selfcheck.json
+webpack-stats.json
+db.sqlite3
+*.pyc

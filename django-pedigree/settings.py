@@ -37,7 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.shortcuts',
-    'pedigree',
+    'django-pedigree',
     # Lets you call your webpack bundle from a django template.
     'webpack_loader'
 )
@@ -53,7 +53,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.security.SecurityMiddleware',
 )
 
-ROOT_URLCONF = 'pedigree.urls'
+ROOT_URLCONF = 'django-pedigree.urls'
 
 TEMPLATES = [
     {
@@ -71,7 +71,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'pedigree.wsgi.application'
+WSGI_APPLICATION = 'django-pedigree.wsgi.application'
 
 
 # Database
