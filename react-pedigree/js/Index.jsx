@@ -19,7 +19,7 @@ class FamilyTree extends React.Component {
 	render() {
 		return (
 			<div>
-				{ this._renderNodes(this.props.parentNode) }
+				{ this._renderNodes(this.props.selfNode) }
 			</div>
 		)
 	}
@@ -48,12 +48,21 @@ class FamilyTree extends React.Component {
 				},
 				this
 			)
+			var parents = current_node.parents.map(
+				function(node) {
+					return this._renderNode(node)
+				},
+				this
+			)
 			return (
-				<Node
-					key={current_node.id}
-					name={current_node.name} 
-				/>
-				children[0]
+				<div>
+					{parents}
+					<Node
+						key={current_node.id}
+						name={current_node.name} 
+					/>
+					{children}
+				</div>
 			)
 		}
 	}
@@ -63,7 +72,7 @@ class Node extends React.Component {
 	constructor(props) {
 		super(props)
 		this.setState({
-			'parent': props.parent,
+			'parents': props.parents,
 			'children': props.children,
 			'name': props.name
 		})
@@ -78,22 +87,42 @@ class Node extends React.Component {
 }
 
 var data = [
-{
-	'parent': null, 
-	'children': [2], 
-	'name': 'Joey',
-	'id': 1
-},
-{
-	'parent': 1, 
-	'children': [], 
-	'name': 'Monica',
-	'id': 2
-}]
+	{
+		'parents': [3], 
+		'children': [2, 4
+		], 
+		'name': 'Self',
+		'id': 1
+	},
+	{
+		'parents': [], 
+		'children': [5], 
+		'name': 'Son',
+		'id': 2
+	},
+	{
+		'parents': [],
+		'children': [],
+		'name': 'Father',
+		'id': 3
+	},
+	{
+		'parents': [],
+		'children': [],
+		'name': 'Daughter',
+		'id': 4
+	},
+	{
+		'parents': [],
+		'children': [],
+		'name': 'Grandson (Son\'s son)',
+		'id': 5
+	}
+]
 
-var parentNode = 1;
+var selfNode = 1;
 
 ReactDom.render(
-	<FamilyTree nodes={data} parentNode={parentNode}/>,
+	<FamilyTree nodes={data} selfNode={selfNode}/>,
 	document.getElementById('react-app')
 );
