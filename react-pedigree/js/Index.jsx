@@ -13,58 +13,56 @@ class FamilyTree extends React.Component {
 		this.state = {
 			'nodes': this.props.nodes,
 		}
-		this._renderNode = this._renderNode.bind(this);
+		this._renderNodes = this._renderNodes.bind(this);
 	}
 
 	render() {
 		return (
 			<div>
-				{ this._renderNodes(this.props.selfNode) }
+				{ this._renderNodes([this.props.selfNode]) }
 			</div>
 		)
 	}
 
-	_renderNodes(current_id) {
-		return this._renderNode(current_id);
+	_renderNodes(current_ids) {
+		return this._renderNode(current_ids);
 	}
 
-	_renderNode(current_id) {
-		var current_node = _.find(this.state.nodes, function(x) {
-			if (x.id === current_id) {
+	_renderNodes(current_ids) {
+		if (current_ids.length === 0) {
+			return;
+		}
+
+		var current_nodes = _.filter(this.state.nodes, function(x) {
+			if (_.includes(current_ids, x.id)) {
 				return x
 			};
+			return false;
 		}, this);
-		if (current_node.children.length < 1) {
+
+		var current_rendered_nodes = _.map(current_nodes, function(node) {
 			return (
 				<Node
-					key={current_node.id}
-					name={current_node.name} 
+					key={node.id}
+					name={node.name} 
 				/>
-			);
-		} else {
-			var children = current_node.children.map(
-				function(node) {
-					return this._renderNode(node)
-				},
-				this
 			)
-			var parents = current_node.parents.map(
-				function(node) {
-					return this._renderNode(node)
-				},
-				this
-			)
-			return (
-				<div>
-					{parents}
-					<Node
-						key={current_node.id}
-						name={current_node.name} 
-					/>
-					{children}
-				</div>
-			)
-		}
+		})
+
+		var children = _.flatten(_.map(current_nodes, function(node) { return node.children } ))
+		var parents = _.flatten(_.map(current_nodes, function(node) { return node.parents }))
+
+		var children_nodes = this._renderNodes(children)
+
+		var parent_nodes = this._renderNodes(parents)
+
+		return (
+			<div>
+				{parent_nodes}
+				<div class="generation">{current_rendered_nodes}</div>
+				{children_nodes}
+			</div>
+		)
 	}
 }
 
@@ -89,8 +87,7 @@ class Node extends React.Component {
 var data = [
 	{
 		'parents': [3], 
-		'children': [2, 4
-		], 
+		'children': [2, 4], 
 		'name': 'Self',
 		'id': 1
 	},
@@ -101,7 +98,7 @@ var data = [
 		'id': 2
 	},
 	{
-		'parents': [],
+		'parents': [6],
 		'children': [],
 		'name': 'Father',
 		'id': 3
@@ -117,6 +114,12 @@ var data = [
 		'children': [],
 		'name': 'Grandson (Son\'s son)',
 		'id': 5
+	},
+	{
+		'parents': [],
+		'children': [],
+		'name': 'Grandfather (Father\'s father)',
+		'id': 6
 	}
 ]
 
