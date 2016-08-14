@@ -13,71 +13,67 @@ class FamilyTree extends React.Component {
 		this.state = {
 			'nodes': this.props.nodes,
 		}
-		this._renderNodes = this._renderNodes.bind(this);
 	}
 
 	render() {
-		return (
-			<div>
-				{ this._renderNodes([this.props.selfNode]) }
-			</div>
-		)
-	}
-
-	_renderNodes(current_ids) {
-		return this._renderNode(current_ids);
-	}
-
-	_renderNodes(current_ids) {
-		if (current_ids.length === 0) {
-			return;
-		}
-
-		var current_nodes = _.filter(this.state.nodes, function(x) {
-			if (_.includes(current_ids, x.id)) {
-				return x
+		var node = _.find(this.props.nodes, (x) => {
+			if (x.id === this.props.selfNode) {
+				return x;
 			};
-			return false;
-		}, this);
-
-		var current_rendered_nodes = _.map(current_nodes, function(node) {
-			return (
-				<Node
-					key={node.id}
-					name={node.name} 
-				/>
-			)
 		})
-
-		var children = _.flatten(_.map(current_nodes, function(node) { return node.children } ))
-		var parents = _.flatten(_.map(current_nodes, function(node) { return node.parents }))
-
-		var children_nodes = this._renderNodes(children)
-
-		var parent_nodes = this._renderNodes(parents)
-
 		return (
-			<div>
-				{parent_nodes}
-				<div class="generation">{current_rendered_nodes}</div>
-				{children_nodes}
+			<div className="tree subtree">
+				<Subtree node={node} nodes={this.props.nodes} className="subtree"/>
 			</div>
 		)
+	}
+}
+
+class Subtree extends React.Component {
+
+	constructor(props) {
+		super(props);
+	}
+
+	render() {
+		var divStyle = {
+			"float": "left",
+			"width": "50%",
+			"margin-top": "30px"
+		}
+		var subtrees = _.map(this.props.node.children, (child) => {
+			var child_node = _.find(this.props.nodes, function(node) {
+				if (child === node.id) {
+					return node;
+				}
+			})
+			return (
+				<Subtree node={child_node} nodes={this.props.nodes}/>
+			);
+		})
+		return (
+			<div className="subtree">
+				<Node name={this.props.node.name}/>
+				{subtrees}
+			</div>
+		);
 	}
 }
 
 class Node extends React.Component {
 	constructor(props) {
 		super(props)
-		this.setState({
-			'parents': props.parents,
-			'children': props.children,
-			'name': props.name
-		})
 	}
 	render() {
+		var divStyle = {
+			"width": "100px",
+			"height": "100px",
+			"border": "solid black 5px",
+			"margin": "0 auto",
+			"text-align": "center"
+		}
 		return (
-			<div class="node">
+			<div class="node" className="nodey">
 				<span><strong>{this.props.name}</strong></span>
 			</div>
 		)
@@ -86,46 +82,39 @@ class Node extends React.Component {
 
 var data = [
 	{
-		'parents': [3], 
-		'children': [2, 4], 
+		'children': [2, 6], 
 		'name': 'Self',
 		'id': 1
 	},
 	{
-		'parents': [], 
-		'children': [5], 
+		'children': [5, 6], 
 		'name': 'Son',
 		'id': 2
 	},
 	{
-		'parents': [6],
-		'children': [],
-		'name': 'Father',
-		'id': 3
-	},
-	{
-		'parents': [],
 		'children': [],
 		'name': 'Daughter',
 		'id': 4
 	},
 	{
-		'parents': [],
-		'children': [],
-		'name': 'Grandson (Son\'s son)',
+		'children': [7],
+		'name': 'Grandson',
 		'id': 5
 	},
 	{
-		'parents': [],
 		'children': [],
-		'name': 'Grandfather (Father\'s father)',
+		'name': 'Granddaughter',
 		'id': 6
+	},
+	{	'children': [],
+		'name': 'Great granddaughter',
+		'id': 7
 	}
 ]
 
 var selfNode = 1;
 
 ReactDom.render(
-	<FamilyTree nodes={data} selfNode={selfNode}/>,
+	<FamilyTree nodes={data} selfNode={selfNode} className="tree"/>,
 	document.getElementById('react-app')
 );
