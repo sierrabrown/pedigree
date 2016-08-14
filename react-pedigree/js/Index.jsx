@@ -108,12 +108,14 @@ class Subtree extends React.Component {
 				}
 			})
 			return (
-				<Subtree node={child_node} nodes={this.props.nodes} currentReport={this.props.currentReport} key={child_node.id}/>
+				<Subtree node={child_node} nodes={this.props.nodes}
+				currentReport={this.props.currentReport} key={child_node.id}/>
 			);
 		})
 		return (
 			<div className="subtree">
-				<Node name={this.props.node.name} currentReport={this.props.currentReport} reports={this.props.node.reports} key={this.props.node.id}/>
+				<Node name={this.props.node.name} currentReport={this.props.currentReport}
+				reports={this.props.node.reports} key={this.props.node.id}/>
 				<div className="subtree-container">
 					{subtrees}
 				</div>
@@ -135,7 +137,7 @@ class Node extends React.Component {
 
 	render() {
 		return (
-			<div className={`nodey ${this.isHighlighted() ? 'highlighted' : ''}`}>
+			<div className={`node ${this.isHighlighted() ? 'highlighted' : ''}`}>
 				<span><strong>{this.props.name}</strong></span>
 			</div>
 		)
