@@ -68,10 +68,10 @@ class Pedigree extends React.Component {
 		);
 	}
 }
-Subtree.propTypes = {
-	node: React.PropTypes.object.isRequired,
+Pedigree.propTypes = {
+	selfNode: React.PropTypes.number.isRequired,
 	nodes: React.PropTypes.array.isRequired,
-	initialReport: React.PropTypes.string.isRequired
+	initialReport: React.PropTypes.string
 }
 
 class FamilyTree extends React.Component {
@@ -82,8 +82,6 @@ class FamilyTree extends React.Component {
 				return x;
 			};
 		})
-		console.log('TREE')
-		console.log(this.props.currentReport)
 		return (
 			<div className="tree">
 				<h2>Pedigree</h2>
@@ -95,9 +93,9 @@ class FamilyTree extends React.Component {
 	}
 }
 FamilyTree.propTypes = {
-	node: React.PropTypes.object.isRequired,
+	selfNode: React.PropTypes.number.isRequired,
 	nodes: React.PropTypes.array.isRequired,
-	currentReport: React.PropTypes.string.isRequired
+	currentReport: React.PropTypes.string
 }
 
 class Subtree extends React.Component {
@@ -126,7 +124,7 @@ class Subtree extends React.Component {
 Subtree.propTypes = {
 	node: React.PropTypes.object.isRequired,
 	nodes: React.PropTypes.array.isRequired,
-	currentReport: React.PropTypes.string.isRequired
+	currentReport: React.PropTypes.string
 }
 
 class Node extends React.Component {
