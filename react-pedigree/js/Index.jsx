@@ -43,7 +43,7 @@ class Pedigree extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			currentReport: props.intialReport
+			currentReport: props.initialReport
 		}
 
 		this.onReportChange = this.onReportChange.bind(this);
@@ -68,6 +68,11 @@ class Pedigree extends React.Component {
 		);
 	}
 }
+Subtree.propTypes = {
+	node: React.PropTypes.object.isRequired,
+	nodes: React.PropTypes.array.isRequired,
+	initialReport: React.PropTypes.string.isRequired
+}
 
 class FamilyTree extends React.Component {
 
@@ -83,11 +88,16 @@ class FamilyTree extends React.Component {
 			<div className="tree">
 				<h2>Pedigree</h2>
 				<div className="subtree-container">
-					<Subtree node={node} nodes={this.props.nodes} className="baseSubtree" currentReport={this.props.currentReport}/>
+					<Subtree node={node} nodes={this.props.nodes} currentReport={this.props.currentReport}/>
 				</div>
 			</div>
 		)
 	}
+}
+FamilyTree.propTypes = {
+	node: React.PropTypes.object.isRequired,
+	nodes: React.PropTypes.array.isRequired,
+	currentReport: React.PropTypes.string.isRequired
 }
 
 class Subtree extends React.Component {
@@ -112,6 +122,11 @@ class Subtree extends React.Component {
 			</div>
 		);
 	}
+}
+Subtree.propTypes = {
+	node: React.PropTypes.object.isRequired,
+	nodes: React.PropTypes.array.isRequired,
+	currentReport: React.PropTypes.string.isRequired
 }
 
 class Node extends React.Component {
@@ -201,9 +216,9 @@ var data = [
 var reports = ['cheek_dimples', 'bald_spot', 'blonde']
 
 var selfNode = 1;
-var intialReport = null;
+var initialReport = null;
 
 ReactDom.render(
-	<Pedigree nodes={data} selfNode={selfNode} intialReport={intialReport} reports={reports}/>,
+	<Pedigree nodes={data} selfNode={selfNode} initialReport={initialReport} reports={reports}/>,
 	document.getElementById('react-app')
 );
