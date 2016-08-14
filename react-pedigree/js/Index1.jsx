@@ -1,25 +1,77 @@
 import React from 'react';
-
 import ReactDom from 'react-dom';
-import {Provider} from 'react-redux';
-
-import {ReduxRouter} from 'redux-router';
 import {_} from 'underscore';
 
+class Filter extends React.Component {
+
+	render() {
+		return (
+			<div className="filter-container">
+				<h3>Filter</h3>
+				<ul className="filter-list">
+					{
+						this.props.reports.map(
+							(report) => (
+								<li 
+									key={report} 
+									onClick={this.props.onChange.bind(null, report)}
+								>
+									{report}
+								</li>
+							)
+						)
+					}
+					<li key="clearReport" onClick={this.props.onChange.bind(null, null)}>clear</li>
+				</ul>
+			</div>
+		);
+	}
+
+}
+Filter.propTypes = {
+	reports: React.PropTypes.array.isRequired,
+	currentReport: React.PropTypes.string,
+	onChange: React.PropTypes.func.isRequired
+}
+
 class Pedigree extends React.Component {
+
+	constructor(props) {
+		super(props);
+		this.state = {
+			currentReport: props.initialReport
+		}
+
+		this.onReportChange = this.onReportChange.bind(this);
+	}
+
+	onReportChange(report) {
+		this.setState({'currentReport': report});
+	}
 
 	render() {
 		return (
 			<div className="pedigree">
 				<FamilyTree 
 					selfNode={this.props.selfNode} 
+					currentReport={this.state.currentReport}
 				/>
+				{
+					this.props.reports &&
+						<Filter
+							reports={this.props.reports}
+							currentReport={this.state.currentReport}
+							onChange={this.onReportChange}
+						/>
+				}
 			</div>
 		);
 	}
 }
 Pedigree.propTypes = {
 	selfNode: React.PropTypes.object.isRequired,
+	initialReport: React.PropTypes.string,
+	reports: React.PropTypes.array
 }
 
 class FamilyTree extends React.Component {
@@ -36,7 +88,8 @@ class FamilyTree extends React.Component {
 	}
 }
 FamilyTree.propTypes = {
-	selfNode: React.PropTypes.object.isRequired
+	selfNode: React.PropTypes.object.isRequired,
+	currentReport: React.PropTypes.string
 }
 
 class Subtree extends React.Component {
