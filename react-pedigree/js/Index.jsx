@@ -6,14 +6,70 @@ import {Provider} from 'react-redux';
 import {ReduxRouter} from 'redux-router';
 import {_} from 'underscore';
 
-class FamilyTree extends React.Component {
+class Filter extends React.Component {
+
+	render() {
+		return (
+			<div className="filter-container">
+				<h3>Filter</h3>
+				<ul className="filter-list">
+					{
+						this.props.reports.map(
+							(report) => (
+								<li 
+									key={report} 
+									onClick={this.props.onChange.bind(null, report)}
+								>
+									{report}
+								</li>
+							)
+						)
+					}
+					<li key="clearReport" onClick={this.props.onChange.bind(null, null)}>clear</li>
+				</ul>
+			</div>
+		);
+	}
+
+}
+Filter.propTypes = {
+	reports: React.PropTypes.array.isRequired,
+	currentReport: React.PropTypes.string,
+	onChange: React.PropTypes.func.isRequired
+}
+
+class Pedigree extends React.Component {
 
 	constructor(props) {
-		super(props)
+		super(props);
 		this.state = {
-			'nodes': this.props.nodes,
+			currentReport: props.intialReport
 		}
+
+		this.onReportChange = this.onReportChange.bind(this);
 	}
+
+	onReportChange(report) {
+		this.setState({'currentReport': report});
+	}
+
+	render() {
+		return (
+			<div className="pedigree">
+				<FamilyTree 
+				nodes={this.props.nodes} 
+				selfNode={this.props.selfNode} 
+				currentReport={this.state.currentReport}/>
+				<Filter
+				reports={this.props.reports}
+				currentReport={this.state.currentReport}
+				onChange={this.onReportChange}/>
+			</div>
+		);
+	}
+}
+
+class FamilyTree extends React.Component {
 
 	render() {
 		var node = _.find(this.props.nodes, (x) => {
@@ -21,19 +77,20 @@ class FamilyTree extends React.Component {
 				return x;
 			};
 		})
+		console.log('TREE')
+		console.log(this.props.currentReport)
 		return (
 			<div className="tree">
-				<Subtree node={node} nodes={this.props.nodes} className="baseSubtree"/>
+				<h2>Pedigree</h2>
+				<div className="subtree-container">
+					<Subtree node={node} nodes={this.props.nodes} className="baseSubtree" currentReport={this.props.currentReport}/>
+				</div>
 			</div>
 		)
 	}
 }
 
 class Subtree extends React.Component {
-
-	constructor(props) {
-		super(props);
-	}
 
 	render() {
 		var subtrees = _.map(this.props.node.children, (child) => {
@@ -43,12 +100,12 @@ class Subtree extends React.Component {
 				}
 			})
 			return (
-				<Subtree node={child_node} nodes={this.props.nodes}/>
+				<Subtree node={child_node} nodes={this.props.nodes} currentReport={this.props.currentReport} key={child_node.id}/>
 			);
 		})
 		return (
 			<div className="subtree">
-				<Node name={this.props.node.name}/>
+				<Node name={this.props.node.name} currentReport={this.props.currentReport} reports={this.props.node.reports} key={this.props.node.id}/>
 				<div className="subtree-container">
 					{subtrees}
 				</div>
@@ -58,60 +115,95 @@ class Subtree extends React.Component {
 }
 
 class Node extends React.Component {
-	constructor(props) {
-		super(props)
+
+	isHighlighted() {
+		return this.props.reports[this.props.currentReport]
 	}
+
 	render() {
-		var divStyle = {
-			"width": "100px",
-			"height": "100px",
-			"border": "solid black 5px",
-			"margin": "0 auto",
-			"text-align": "center"
-		}
 		return (
-			<div class="node" className="nodey">
+			<div className={`nodey ${this.isHighlighted() ? 'highlighted' : ''}`}>
 				<span><strong>{this.props.name}</strong></span>
 			</div>
 		)
 	}
+
+}
+Node.propTypes = {
+	name: React.PropTypes.string.isRequired,
+	currentReport: React.PropTypes.string,
+	reports: React.PropTypes.object.isRequired
 }
 
 var data = [
 	{
 		'children': [2, 4], 
 		'name': 'Self',
-		'id': 1
+		'id': 1,
+		'reports': {
+			'cheek_dimples': true,
+			'bald_spot': false,
+			'blonde': true
+		}
 	},
 	{
 		'children': [5, 6], 
 		'name': 'Son',
-		'id': 2
+		'id': 2,
+		'reports': {
+			'cheek_dimples': true,
+			'bald_spot': true,
+			'blonde': true
+		}
 	},
 	{
 		'children': [],
 		'name': 'Daughter',
-		'id': 4
+		'id': 4,
+		'reports': {
+			'cheek_dimples': true,
+			'bald_spot': false,
+			'blonde': true
+		}
 	},
 	{
 		'children': [7],
 		'name': 'Grandson',
-		'id': 5
+		'id': 5,
+		'reports': {
+			'cheek_dimples': false,
+			'bald_spot': true,
+			'blonde': true
+		}
 	},
 	{
 		'children': [],
 		'name': 'Granddaughter',
-		'id': 6
+		'id': 6,
+		'reports': {
+			'cheek_dimples': true,
+			'bald_spot': false,
+			'blonde': true
+		}
 	},
 	{	'children': [],
 		'name': 'Great granddaughter',
-		'id': 7
+		'id': 7,
+		'reports': {
+			'cheek_dimples': true,
+			'bald_spot': false,
+			'blonde': true
+		},
+		'highlighted': false,
 	}
 ]
 
+var reports = ['cheek_dimples', 'bald_spot', 'blonde']
+
 var selfNode = 1;
+var intialReport = null;
 
 ReactDom.render(
-	<FamilyTree nodes={data} selfNode={selfNode} className="tree"/>,
+	<Pedigree nodes={data} selfNode={selfNode} intialReport={intialReport} reports={reports}/>,
 	document.getElementById('react-app')
 );
