@@ -57,75 +57,73 @@ class Pedigree extends React.Component {
 		return (
 			<div className="pedigree">
 				<FamilyTree 
-				nodes={this.props.nodes} 
-				selfNode={this.props.selfNode} 
-				currentReport={this.state.currentReport}/>
-				<Filter
-				reports={this.props.reports}
-				currentReport={this.state.currentReport}
-				onChange={this.onReportChange}/>
+					selfNode={this.props.selfNode} 
+					currentReport={this.state.currentReport}
+				/>
+				{
+					this.props.reports &&
+						<Filter
+							reports={this.props.reports}
+							currentReport={this.state.currentReport}
+							onChange={this.onReportChange}
+						/>
+				}
 			</div>
 		);
 	}
 }
 Pedigree.propTypes = {
-	selfNode: React.PropTypes.number.isRequired,
-	nodes: React.PropTypes.array.isRequired,
-	initialReport: React.PropTypes.string
+	selfNode: React.PropTypes.object.isRequired,
+	initialReport: React.PropTypes.string,
+	reports: React.PropTypes.array
 }
 
 class FamilyTree extends React.Component {
 
 	render() {
-		var node = _.find(this.props.nodes, (x) => {
-			if (x.id === this.props.selfNode) {
-				return x;
-			};
-		})
 		return (
 			<div className="tree">
 				<h2>Pedigree</h2>
 				<div className="subtree-container">
-					<Subtree node={node} nodes={this.props.nodes} currentReport={this.props.currentReport}/>
+					<Subtree node={this.props.selfNode} currentReport={this.props.currentReport}/>
 				</div>
 			</div>
 		)
 	}
 }
 FamilyTree.propTypes = {
-	selfNode: React.PropTypes.number.isRequired,
-	nodes: React.PropTypes.array.isRequired,
+	selfNode: React.PropTypes.object.isRequired,
 	currentReport: React.PropTypes.string
 }
 
 class Subtree extends React.Component {
 
 	render() {
-		var subtrees = _.map(this.props.node.children, (child) => {
-			var child_node = _.find(this.props.nodes, function(node) {
-				if (child === node.id) {
-					return node;
-				}
-			})
-			return (
-				<Subtree node={child_node} nodes={this.props.nodes}
-				currentReport={this.props.currentReport} key={child_node.id}/>
-			);
-		})
 		return (
 			<div className="subtree">
-				<Node name={this.props.node.name} currentReport={this.props.currentReport}
-				reports={this.props.node.reports} key={this.props.node.id}/>
+				<Node
+					name={this.props.node.name}
+					currentReport={this.props.currentReport}
+					reports={this.props.node.reports}
+					key={this.props.node.id}
+				/>
 				<div className="subtree-container">
-					{subtrees}
+					{this.renderSubtrees()}
 				</div>
 			</div>
 		);
 	}
+
+	renderSubtrees() {
+		 _.map(this.props.node.children, (childNode) => {
+			return (
+				<Subtree node={childNode} currentReport={this.props.currentReport} key={childNode.id}/>
+			);
+		})
+	}
 }
 Subtree.propTypes = {
 	node: React.PropTypes.object.isRequired,
-	nodes: React.PropTypes.array.isRequired,
 	currentReport: React.PropTypes.string
 }
 
@@ -218,7 +216,20 @@ var reports = ['cheek_dimples', 'bald_spot', 'blonde']
 var selfNode = 1;
 var initialReport = null;
 
+function populateChildren(nodes) {
+	nodes.forEach(function(node)  {
+		node.children = node.children.map((childId, idx) => {
+			return nodes.find(({ id }) => id === childId);
+		});
+	});
+}
+
+// This is mutative!
+populateChildren(data);
+
+var selfNode = data.find(({ id }) => id === 1);
+
 ReactDom.render(
-	<Pedigree nodes={data} selfNode={selfNode} initialReport={initialReport} reports={reports}/>,
+	<Pedigree selfNode={selfNode} reports={reports}/>,
 	document.getElementById('react-app')
 );
