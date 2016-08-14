@@ -22,8 +22,8 @@ class FamilyTree extends React.Component {
 			};
 		})
 		return (
-			<div className="tree subtree">
-				<Subtree node={node} nodes={this.props.nodes} className="subtree"/>
+			<div className="tree">
+				<Subtree node={node} nodes={this.props.nodes} className="baseSubtree"/>
 			</div>
 		)
 	}
@@ -36,11 +36,6 @@ class Subtree extends React.Component {
 	}
 
 	render() {
-		var divStyle = {
-			"float": "left",
-			"width": "50%",
-			"margin-top": "30px"
-		}
 		var subtrees = _.map(this.props.node.children, (child) => {
 			var child_node = _.find(this.props.nodes, function(node) {
 				if (child === node.id) {
@@ -54,7 +49,9 @@ class Subtree extends React.Component {
 		return (
 			<div className="subtree">
 				<Node name={this.props.node.name}/>
-				{subtrees}
+				<div className="subtree-container">
+					{subtrees}
+				</div>
 			</div>
 		);
 	}
@@ -82,7 +79,7 @@ class Node extends React.Component {
 
 var data = [
 	{
-		'children': [2, 6], 
+		'children': [2, 4], 
 		'name': 'Self',
 		'id': 1
 	},
