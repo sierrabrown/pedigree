@@ -6,11 +6,19 @@ import { _ } from "underscore";
 
 class Pedigree extends React.Component {
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      currentReport: props.initialReport,
+    };
+  }
+
   render() {
     return (
       <div className="pedigree">
         <FamilyTree
           selfNode={this.props.selfNode}
+          currentReport={this.state.currentReport}
         />
       </div>
     );
@@ -18,6 +26,8 @@ class Pedigree extends React.Component {
 }
 Pedigree.propTypes = {
   selfNode: React.PropTypes.object.isRequired,
+  initialReport: React.PropTypes.string,
+  reports: React.PropTypes.array,
 };
 
 class FamilyTree extends React.Component {
@@ -27,7 +37,7 @@ class FamilyTree extends React.Component {
       <div className="tree">
         <h2>Pedigree</h2>
         <div className="subtree-container">
-          <Subtree node={this.props.selfNode}/>
+          <Subtree node={this.props.selfNode} currentReport={this.props.currentReport} />
         </div>
       </div>
     );
@@ -35,6 +45,7 @@ class FamilyTree extends React.Component {
 }
 FamilyTree.propTypes = {
   selfNode: React.PropTypes.object.isRequired,
+  currentReport: React.PropTypes.string,
 };
 
 class Subtree extends React.Component {
@@ -42,7 +53,7 @@ class Subtree extends React.Component {
   renderSubtrees() {
     return _.map(this.props.node.children, (childNode) => {
       return (
-        <Subtree node={childNode} key={childNode.id} />
+        <Subtree node={childNode} currentReport={this.props.currentReport} key={childNode.id} />
       );
     });
   }
@@ -52,6 +63,8 @@ class Subtree extends React.Component {
       <div className="subtree">
         <Node
           name={this.props.node.name}
+          currentReport={this.props.currentReport}
+          reports={this.props.node.reports}
           key={this.props.node.id}
         />
         <div className="subtree-container">
@@ -63,13 +76,18 @@ class Subtree extends React.Component {
 }
 Subtree.propTypes = {
   node: React.PropTypes.object.isRequired,
+  currentReport: React.PropTypes.string,
 };
 
 class Node extends React.Component {
 
+  isHighlighted() {
+    return this.props.reports[this.props.currentReport];
+  }
+
   render() {
     return (
-      <div className="node">
+      <div className={`node ${this.isHighlighted() ? "highlighted" : ""}`}>
         <span><strong>{this.props.name}</strong></span>
       </div>
     );
@@ -78,6 +96,8 @@ class Node extends React.Component {
 }
 Node.propTypes = {
   name: React.PropTypes.string.isRequired,
+  currentReport: React.PropTypes.string,
+  reports: React.PropTypes.object.isRequired,
 };
 
 const data = [
@@ -143,6 +163,7 @@ const data = [
 ];
 
 let reports = ["cheek_dimples", "bald_spot", "blonde"];
+let initialReport = "cheek_dimples";
 
 function populateChildren(nodes) {
   nodes.forEach(function(node)  {
@@ -156,7 +177,8 @@ function populateChildren(nodes) {
 populateChildren(data);
 
 let selfNode = data.find(({ id }) => id === 1);
+
 ReactDom.render(
-  <Pedigree selfNode={selfNode} />,
-  document.getElementById("react-app-1")
+  <Pedigree selfNode={selfNode} reports={reports} initialReport={initialReport} />,
+  document.getElementById("react-app-2")
 );
